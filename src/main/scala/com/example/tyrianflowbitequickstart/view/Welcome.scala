@@ -1,0 +1,49 @@
+package com.example.tyrianflowbitequickstart.view
+
+import tyrian.Html.*
+import tyrian.Html
+import com.example.tyrianflowbitequickstart.model.Msg
+
+object Welcome:
+
+  def apply(message: String): Html[Msg] =
+    val tyrianLink =
+      a(href := "https://tyrian.indigoengine.io", rel := "noopener noreferrer", target := "_blank", cls := "text-purple-700 hover:underline")(
+        "Tyrian"
+      )
+    val flowbiteLink = a(href := "https://flowbite.com", rel := "noopener noreferrer", target := "_blank", cls := "text-blue-700 hover:underline")(
+      "Flowbite"
+    )
+
+    val title = h1(cls := "mb-2 text-4xl font-bold tracking-tight text-gray-900 dark:text-white")(
+      text("Welcome to "),
+      tyrianLink,
+      text(" + "),
+      flowbiteLink
+    )
+
+    div(cls := "flex flex-col items-center mb-8")(
+      div(cls := "my-8")(title),
+      div(cls := "max-w bg-white border border-gray-200 rounded-lg shadow-xl dark:bg-gray-800 dark:border-gray-700")(
+        a(href := "#")(
+          img(cls := "rounded-t-lg", src := "assets/images/image-1.jpg")
+        ),
+        div(cls := "p-5")(
+          a(href := "#")(
+          ),
+          p(cls := "mb-3 font-normal text-gray-700 dark:text-gray-400")(
+            p(cls := "mb-3 font-large text-gray-900 dark:text-gray-300")(
+              text("Experience the power of"),
+              span(cls := "text-red-400 font-semibold")(" purely functional programming "),
+              text("with "),
+              tyrianLink,
+              text(" and "),
+              flowbiteLink,
+              text(" — it's absolutely "),
+              span(cls := "text-green-600 font-bold")("AWESOME!")
+            )
+          )
+        )
+      ),
+      ComponentsDemo()
+    )
