@@ -4,10 +4,6 @@ import com.typesafe.sbt.packager.docker.{Cmd, ExecCmd}
 import sbt._
 import Keys._
 
-lazy val autoImportSettings = Seq(
-  scalacOptions += "-Yimports:zio,scala,scala.Predef"
-)
-
 lazy val root = (project in file("."))
   .enablePlugins(ScalaJSPlugin, DockerPlugin)
   .settings(
@@ -22,7 +18,6 @@ lazy val root = (project in file("."))
     libraryDependencies ++= Seq(
       "io.indigoengine"            %%% "tyrian-zio"                % Dependencies.Tyrian,
       "dev.zio"                    %%% "zio-interop-cats"          % Dependencies.ZioInteropCats,
-      "org.http4s"                 %%% "http4s-dom"                % Dependencies.Http4sDom,
       "com.softwaremill.quicklens" %%% "quicklens"                 % Dependencies.Quicklens,
       ("org.scala-js"              %%% "scalajs-java-securerandom" % Dependencies.JavaSecureRandom).cross(CrossVersion.for3Use2_13)
     )

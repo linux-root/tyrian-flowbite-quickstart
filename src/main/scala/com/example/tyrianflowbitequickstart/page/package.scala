@@ -1,13 +1,13 @@
 package com.example.tyrianflowbitequickstart
 
 import tyrian.Cmd
-import zio.*
 import tyrian.Html
 import tyrian.Html.div
 import java.util.UUID
 import com.example.tyrianflowbitequickstart.model.*
 import com.example.tyrianflowbitequickstart.view.pages.*
 import tyrian.cmds.Logger
+import zio.*
 import zio.interop.catz.*
 import com.example.tyrianflowbitequickstart.util.PrettyLogger
 

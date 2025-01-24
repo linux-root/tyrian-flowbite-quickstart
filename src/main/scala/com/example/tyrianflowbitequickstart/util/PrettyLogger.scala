@@ -4,7 +4,6 @@ import org.scalajs.dom.console
 import tyrian.Cmd
 import zio.Task
 import zio.interop.catz.*
-
 object PrettyLogger {
   def success(msg: String): Cmd[Task, Nothing] =
     Cmd.SideEffect(

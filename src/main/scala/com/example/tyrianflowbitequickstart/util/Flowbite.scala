@@ -3,9 +3,9 @@ package com.example.tyrianflowbitequickstart.util
 import scala.scalajs.js
 import scala.scalajs.js.annotation.JSImport
 import tyrian.Cmd
+import scala.concurrent.duration.*
 import zio.*
 import zio.interop.catz.*
-
 object Flowbite:
   @JSImport("js/flowbite.js", JSImport.Namespace)
   @js.native

@@ -63,7 +63,7 @@ object WebApp extends TyrianZIOApp[Msg, Model]:
       else (model, page.doNavigate(model))
 
     case Msg.DoNavigate(page) =>
-      (model.modify(_.currentPage).setTo(page), Nav.pushUrl(page.path) |+| Flowbite.initCmd)
+      (model.modify(_.currentPage).setTo(page), Nav.pushUrl[Task](page.path) |+| Flowbite.initCmd)
     case Msg.UnhandledRoute(path) =>
       (model, PrettyLogger.error(s"Unhandled route: $path"))
 
