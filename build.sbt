@@ -9,6 +9,7 @@ lazy val root = (project in file("."))
   .settings(
     organization := "com.example",
     name := "tyrian-flowbite-quickstart",
+    version      := "0.1.0",
     scalaVersion := "3.6.2",
     scalaJSLinkerConfig ~= { _.withModuleKind(ModuleKind.ESModule) },
     scalaJSUseMainModuleInitializer := true,
