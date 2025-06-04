@@ -1,5 +1,4 @@
 import { defineConfig } from 'vite';
-import basicSsl from '@vitejs/plugin-basic-ssl'; // Optional: if HTTPS is needed
 import path from 'path';
 
 export default defineConfig(({ command }) => {
@@ -29,11 +28,7 @@ export default defineConfig(({ command }) => {
       outDir: 'dist',
       // assetsDir: 'assets', // Default is 'assets'
       // sourcemap: true, // Enable for production debugging if needed
-    },
-    plugins: [
-      // basicSsl() // Uncomment if you want to use basicSsl plugin and enabled https server option
-    ],
-    // Vite automatically uses postcss.config.js if present
+    }
   };
 
   if (command === 'serve') { // Development specific config
