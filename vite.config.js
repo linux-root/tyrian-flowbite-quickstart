@@ -3,7 +3,6 @@ import path from 'path';
 
 export default defineConfig(({ command }) => {
   const commonConfig = {
-    // Assuming index.html will be at the project root
     // root: '.',
     publicDir: 'public',
     resolve: {
@@ -20,9 +19,7 @@ export default defineConfig(({ command }) => {
     },
     server: {
       port: 9876,
-      historyApiFallback: true,
-      // proxy: { ... } // If you need to proxy API requests
-      // https: true // Uncomment if you want to use basicSsl plugin
+      historyApiFallback: true
     },
     build: {
       outDir: 'dist',
