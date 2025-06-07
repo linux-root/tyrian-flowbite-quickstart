@@ -1,18 +1,17 @@
 import { defineConfig } from 'vite';
 import path from 'path';
 
+const scalaVersion = "3.6.2"
+
 export default defineConfig(({ command }) => {
   const commonConfig = {
     // root: '.',
     publicDir: 'public',
     resolve: {
       alias: {
-        // Alias to help import Scala.js output
-        // Adjust the path based on where sbt outputs the JS file relative to project root
         'scala-js-output': command === 'serve'
-          ? path.resolve(__dirname, './target/scala-3.6.2/tyrian-flowbite-quickstart-fastopt/main.js')
-          : path.resolve(__dirname, './target/scala-3.6.2/tyrian-flowbite-quickstart-opt/main.js'),
-        // Keep existing aliases if they are still relevant
+          ? path.resolve(__dirname, `./target/scala-${scalaVersion}/tyrian-flowbite-quickstart-fastopt/main.js`)
+          : path.resolve(__dirname, `./target/scala-${scalaVersion}/tyrian-flowbite-quickstart-opt/main.js`),
         "resources": path.resolve(__dirname, "./src/main/resources"),
         "js": path.resolve(__dirname, "./src/main/js"),
       }
