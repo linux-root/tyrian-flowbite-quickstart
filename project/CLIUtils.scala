@@ -50,7 +50,7 @@ object CLIUtils {
     if (Files.exists(compiledScalajsFile)) {
       installNpmPackages()
       val devCommand = Seq("npm", "run", "dev")
-      val pattern    = "compiled successfully".r
+      val pattern    = ".ready in.".r
       val successMessage = boxedSuccess(
         "Web app now available on http://localhost:9876"
       )
@@ -64,8 +64,8 @@ object CLIUtils {
   def buildFrontend(): Unit = {
     installNpmPackages()
     removeDistFolderIfAny()
-    val buildCommand   = Seq("npm", "run", "build:prod")
-    val pattern        = "webpack \\d+\\.\\d+\\.\\d+ compiled".r
+    val buildCommand   = Seq("npm", "run", "build")
+    val pattern        = ".built in.".r
     val successMessage = boxedSuccess("Web app is available at directory 'dist'")
     CommandWatcher.watch(buildCommand, pattern, successMessage)
   }

@@ -1,7 +1,7 @@
 import sbt.io.Path.relativeTo
 import com.typesafe.sbt.packager.docker.{Cmd, ExecCmd}
 
-lazy val webpackDevServer = taskKey[Unit]("Start the dev server. It should be opened in a separate terminal")
+lazy val viteDevServer = taskKey[Unit]("Start the dev server. It should be opened in a separate terminal")
 lazy val publishDist      = taskKey[Unit]("Build a static web artifact")
 
 lazy val root = (project in file("."))
@@ -10,7 +10,7 @@ lazy val root = (project in file("."))
     organization := "com.example",
     name := "tyrian-flowbite-quickstart",
     version      := "0.1.0",
-    scalaVersion := "3.6.2",
+    scalaVersion := "3.7.1",
     scalaJSLinkerConfig ~= { _.withModuleKind(ModuleKind.ESModule) },
     scalaJSUseMainModuleInitializer := true,
     // Source maps seem to be broken with bundler
@@ -49,7 +49,7 @@ lazy val root = (project in file("."))
     }
   )
   .settings(
-    webpackDevServer := {
+    viteDevServer := {
       CLIUtils.startFrontendDevServer("tyrian-flowbite-quickstart", scalaVersion.value)
     },
     publishDist := {

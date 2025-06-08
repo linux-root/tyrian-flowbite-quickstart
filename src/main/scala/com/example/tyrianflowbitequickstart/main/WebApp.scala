@@ -16,14 +16,8 @@ import com.example.tyrianflowbitequickstart.route.*
 import com.example.tyrianflowbitequickstart.util.*
 import com.example.tyrianflowbitequickstart.page.*
 
-@JSImport("resources/index.css", JSImport.Default)
-@js.native
-object IndexCSS extends js.Object
-
 @JSExportTopLevel("TyrianApp")
 object WebApp extends TyrianZIOApp[Msg, Model]:
-
-  private val css = IndexCSS // Webpack will use this css when bundling
 
   def main(args: Array[String]): Unit = launch("app") // mount the app to div with id="app"
 
