@@ -1,6 +1,6 @@
 import { defineConfig } from 'vite';
 import path from 'path';
-const scalaVersion = '3.7.1'
+const scalaVersion = '3.7.3'
 const scalaProjectName = 'tyrian-flowbite-quickstart'
 
 export default defineConfig(({ command }) => {

@@ -1,8 +1,8 @@
 import sbt.io.Path.relativeTo
 import com.typesafe.sbt.packager.docker.{Cmd, ExecCmd}
 
-lazy val viteDevServer = taskKey[Unit]("Start the dev server. It should be opened in a separate terminal")
-lazy val publishDist      = taskKey[Unit]("Build a static web artifact")
+lazy val devServer   = taskKey[Unit]("Start both ~fastOptJS and vite dev server concurrently")
+lazy val publishDist = taskKey[Unit]("Build a static web artifact")
 
 lazy val root = (project in file("."))
   .enablePlugins(ScalaJSPlugin, DockerPlugin)
@@ -10,7 +10,7 @@ lazy val root = (project in file("."))
     organization := "com.example",
     name := "tyrian-flowbite-quickstart",
     version      := "0.1.0",
-    scalaVersion := "3.7.1",
+    scalaVersion := "3.7.3",
     scalaJSLinkerConfig ~= { _.withModuleKind(ModuleKind.ESModule) },
     scalaJSUseMainModuleInitializer := true,
     // Source maps seem to be broken with bundler
@@ -49,11 +49,36 @@ lazy val root = (project in file("."))
     }
   )
   .settings(
-    viteDevServer := {
-      CLIUtils.startFrontendDevServer("tyrian-flowbite-quickstart", scalaVersion.value)
+    devServer := {
+      val sourceDirs = (Compile / sourceDirectories).value
+      val scalaVer   = scalaVersion.value
+      val projectRef = thisProjectRef.value
+      val taskKey    = projectRef / Compile / fastOptJS
+      val sbtState   = state.value
+
+      val compilationRunner = () =>
+        try
+          Project.runTask(taskKey, sbtState) match {
+            case Some((_, Value(_))) => true  // Success
+            case Some((_, Inc(_)))   => false // Compilation failed
+            case None =>
+              println(s"[Scala.js ERROR] Task $taskKey not found")
+              false
+          }
+        catch {
+          case e: Exception =>
+            println(s"[Scala.js ERROR] Compilation error: ${e.getMessage}")
+            false
+        }
+
+      CLIHelper.startDevEnvironment(
+        scalaVer,
+        sourceDirs,
+        compilationRunner
+      )
     },
     publishDist := {
       (Compile / fullLinkJS).value
-      CLIUtils.buildFrontend()
+      CLIHelper.buildFrontend()
     }
   )
