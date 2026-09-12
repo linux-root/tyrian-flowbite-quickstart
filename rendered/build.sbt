@@ -1,0 +1,67 @@
+import sbt.io.Path.relativeTo
+import com.typesafe.sbt.packager.docker.{Cmd, ExecCmd}
+
+lazy val publishDist = taskKey[Unit]("Build a static web artifact")
+
+lazy val root = (project in file("."))
+  .enablePlugins(ScalaJSPlugin, DockerPlugin)
+  .settings(
+    organization := "com.example",
+    name := "tyrian-flowbite-quickstart",
+    version      := "0.1.0",
+    scalaVersion := "3.9.0",
+    scalaJSLinkerConfig ~= { _.withModuleKind(ModuleKind.ESModule) },
+    scalaJSUseMainModuleInitializer := true,
+    // Source maps seem to be broken with bundler
+    Compile / fastOptJS / scalaJSLinkerConfig ~= { _.withSourceMap(false) },
+    Compile / fullOptJS / scalaJSLinkerConfig ~= { _.withSourceMap(false) },
+    libraryDependencies ++= Seq(
+      "io.indigoengine"            %%% "tyrian-zio"                % Dependencies.Tyrian,
+      "dev.zio"                    %%% "zio-interop-cats"          % Dependencies.ZioInteropCats,
+      "com.softwaremill.quicklens" %%% "quicklens"                 % Dependencies.Quicklens,
+      ("org.scala-js"              %%% "scalajs-java-securerandom" % Dependencies.JavaSecureRandom).cross(CrossVersion.for3Use2_13)
+    )
+  )
+  .settings(
+    dockerBaseImage       := "nginx:stable-perl",
+    Docker / publish      := (Docker / publish).dependsOn(Compile / fullLinkJS).value,
+    Docker / publishLocal := (Docker / publishLocal).dependsOn(Compile / fullLinkJS).value,
+    dockerExposedPorts    := Seq(80),
+    dockerRepository      := Some(DockerSettings.repository),
+    DockerSettings.x86ArchSetting,
+    Docker / defaultLinuxInstallLocation := "/usr/share/nginx/html",
+    dockerCommands := dockerCommands.value.filter {
+      case ExecCmd(cmd, _) => cmd != "ENTRYPOINT" && cmd != "CMD" && cmd != "USER"
+      case Cmd(cmd, _)     => cmd != "USER" && cmd != "RUN"
+      case _               => true
+
+    } ++ Seq(Cmd("COPY", "nginx.conf", "/etc/nginx/nginx.conf"), Cmd("CMD", """["nginx", "-g", "daemon off;"]""")),
+    Docker / mappings ++= {
+      publishDist.value
+      val frontendDist    = baseDirectory.value / "dist"
+      val nginxConfigFile = baseDirectory.value / "nginx.conf"
+
+      (frontendDist ** "*").get.map { file =>
+        file -> s"/usr/share/nginx/html/${frontendDist.relativize(file).get.getPath}"
+      } :+ (nginxConfigFile -> "/nginx.conf")
+
+    }
+  ).settings(
+    jsTool := JSToolConfig(
+      installPackagesCommand = ScalaJsCli.Cmd("npm install", "found\\s\\d+\\svulnerabilities".r),
+      dev = DevConfig(
+        command = ScalaJsCli.Cmd("npm run dev", "ready in".r),
+        startupMessage = """|Starting development environment:
+                            | - Scala.js compiler: Starting in watch mode
+                            | - Vite dev server""".stripMargin,
+        successMessage = """|Development environment ready!
+                            |Web app now available on http://localhost:9876
+                            |Press Ctrl+C to stop""".stripMargin
+      ),
+      build = BuildConfig(
+        command = ScalaJsCli.Cmd("npm run build", ".built in.".r),
+        startupMessage = "Building production JavaScript bundle",
+        successMessage = "Web app is available at directory 'dist'"
+      )
+    )
+  )

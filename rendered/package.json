@@ -1,0 +1,21 @@
+{
+  "name": "tyrian-flowbite",
+  "version": "0.1.0",
+  "description": "Tyrian + Flowbite ^^",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "author": "Watson",
+  "license": "ISC",
+  "devDependencies": {
+    "@tailwindcss/vite": "^4.3.3",
+    "@vitejs/plugin-basic-ssl": "^2.0.0",
+    "tailwindcss": "^4.3.3",
+    "vite": "^6.3.5"
+  },
+  "dependencies": {
+    "flowbite": "^4.0.2"
+  }
+}
