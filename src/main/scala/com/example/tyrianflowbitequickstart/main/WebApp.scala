@@ -12,6 +12,7 @@ import tyrian.Routing
 import com.example.tyrianflowbitequickstart.model.*
 import com.example.tyrianflowbitequickstart.util.Flowbite
 import com.example.tyrianflowbitequickstart.view.MainContainer
+import com.example.tyrianflowbitequickstart.view.ComponentShell
 import com.example.tyrianflowbitequickstart.route.*
 import com.example.tyrianflowbitequickstart.util.*
 import com.example.tyrianflowbitequickstart.page.*
@@ -63,7 +64,10 @@ object WebApp extends TyrianZIOApp[Msg, Model]:
       (model, PrettyLogger.error(s"Unhandled route: $path"))
 
   def view(model: Model): Html[Msg] =
-    val pageContent = model.currentPage.render(model)
+    val page = model.currentPage
+    val pageContent =
+      if page == Page.Home then page.render(model)
+      else ComponentShell(page.title, page.render(model))
     MainContainer(pageContent, model.isDarkMode)
 
   def subscriptions(model: Model): Sub[Task, Msg] = Sub.None

@@ -1,10 +1,12 @@
 import { defineConfig } from 'vite';
 import path from 'path';
-const scalaVersion = '3.7.3'
+import tailwindcss from '@tailwindcss/vite';
+const scalaVersion = '3.9.0'
 const scalaProjectName = 'tyrian-flowbite-quickstart'
 
 export default defineConfig(({ command }) => {
   return {
+    plugins: [tailwindcss()],
     resolve: {
       alias: {
         "scalajs": command == "serve" ? `./target/scala-${scalaVersion}/${scalaProjectName}-fastopt/main.js`: `./target/scala-${scalaVersion}/${scalaProjectName}-opt/main.js`,
