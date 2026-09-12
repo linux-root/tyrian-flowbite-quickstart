@@ -35,7 +35,7 @@ jobs:
         run: sbt -batch compile </dev/null
 
       - name: Sync rendered output into this repo
-        run: rsync -a --delete --exclude='.git' --exclude='.github/workflows/sync-and-deploy.yml' --exclude-from='rendered/.gitignore' rendered/ .
+        run: rsync -a --delete --exclude='.git' --exclude='/rendered' --exclude='.github/workflows/sync-and-deploy.yml' --exclude-from='rendered/.gitignore' rendered/ .
 
       - name: Commit if changed
         id: diff
@@ -71,12 +71,12 @@ jobs:
           apps: sbt
 
       - name: Build static site
-        env:
-          VITE_BASE: /${{ github.event.repository.name }}/
         run: sbt publishDist
 
-      - name: SPA fallback for client-side routing
-        run: cp dist/index.html dist/404.html
+      - name: Custom domain + SPA fallback for client-side routing
+        run: |
+          echo 'tyrian.w47s0n.dev' > dist/CNAME
+          cp dist/index.html dist/404.html
 
       - uses: actions/upload-pages-artifact@v3
         with:
