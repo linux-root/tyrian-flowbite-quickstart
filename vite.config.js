@@ -6,6 +6,7 @@ const scalaProjectName = 'tyrian-flowbite-quickstart'
 
 export default defineConfig(({ command }) => {
   return {
+    base: process.env.VITE_BASE || '/',
     plugins: [tailwindcss()],
     resolve: {
       alias: {
