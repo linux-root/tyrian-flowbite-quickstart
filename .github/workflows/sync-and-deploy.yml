@@ -1,0 +1,86 @@
+name: Sync from template and deploy
+
+on:
+  schedule:
+    - cron: '0 6 * * *'
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+
+concurrency:
+  group: sync-and-deploy
+  cancel-in-progress: true
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    outputs:
+      changed: ${{ steps.diff.outputs.changed }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: coursier/setup-action@v3
+        with:
+          jvm: temurin:17
+          apps: sbt giter8
+
+      - name: Render latest template
+        run: g8 linux-root/tyrian-flowbite.g8 --backend=no -o rendered </dev/null
+
+      - name: Verify it compiles
+        working-directory: rendered
+        run: sbt -batch compile </dev/null
+
+      - name: Sync rendered output into this repo
+        run: rsync -a --delete --exclude='.git' --exclude='.github/workflows/sync-and-deploy.yml' --exclude-from='rendered/.gitignore' rendered/ .
+
+      - name: Commit if changed
+        id: diff
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add -A
+          if git diff --cached --quiet; then
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+          else
+            git commit -m "chore: sync from linux-root/tyrian-flowbite.g8"
+            git push
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+          fi
+
+  deploy:
+    needs: sync
+    if: needs.sync.outputs.changed == 'true' || github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - uses: coursier/setup-action@v3
+        with:
+          jvm: temurin:17
+          apps: sbt
+
+      - name: Build static site
+        env:
+          VITE_BASE: /${{ github.event.repository.name }}/
+        run: sbt publishDist
+
+      - name: SPA fallback for client-side routing
+        run: cp dist/index.html dist/404.html
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: dist
+
+      - id: deployment
+        uses: actions/deploy-pages@v4
