@@ -1,6 +1,11 @@
 name: Sync from template and deploy
 
 on:
+  # Fired by the template repo right after its tests pass, so a template commit
+  # lands here in seconds instead of waiting for the nightly cron below.
+  repository_dispatch:
+    types: [template-updated]
+  # Fallback: catches anything a missed dispatch would have dropped.
   schedule:
     - cron: '0 6 * * *'
   workflow_dispatch: {}
